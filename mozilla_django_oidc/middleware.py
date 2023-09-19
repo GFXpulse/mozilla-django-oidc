@@ -294,4 +294,4 @@ class RefreshOIDCAccessToken(SessionRefresh):
         id_token = None
         access_token = token_info.get('access_token')
         refresh_token = token_info.get('refresh_token')
-        store_tokens(request.session, access_token, id_token, refresh_token)
+        store_tokens(request.session, access_token, id_token, refresh_token, update_refresh_token=bool(refresh_token))
