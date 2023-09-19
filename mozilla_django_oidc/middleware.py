@@ -198,7 +198,7 @@ class SessionRefresh(MiddlewareMixin):
             "prompt": "none",
         }
 
-        params.update(self.get_settings("OIDC_AUTH_REQUEST_EXTRA_PARAMS", {}))
+        auth_params.update(self.get_settings("OIDC_AUTH_REQUEST_EXTRA_PARAMS", {}))
 
         if self.OIDC_USE_NONCE:
             nonce = get_random_string(self.OIDC_NONCE_SIZE)
