@@ -205,7 +205,7 @@ class SessionRefresh(MiddlewareMixin):
             auth_params.update({"nonce": nonce})
 
         # Register the one-time parameters in the session
-        add_state_and_nonce_to_session(request, state, auth_params)
+        add_state_and_verifier_and_nonce_to_session(request, state, auth_params)
         request.session['oidc_login_next'] = request.get_full_path()
 
         query = urlencode(auth_params, quote_via=quote)
