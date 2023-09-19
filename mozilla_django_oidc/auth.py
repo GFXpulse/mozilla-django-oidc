@@ -39,14 +39,14 @@ def default_username_algo(email):
     return smart_str(username)
 
 
-def store_tokens(session, access_token, id_token, refresh_token):
+def store_tokens(session, access_token, id_token, refresh_token, update_refresh_token=True):
     if import_from_settings('OIDC_STORE_ACCESS_TOKEN', False):
         session['oidc_access_token'] = access_token
 
     if import_from_settings('OIDC_STORE_ID_TOKEN', False):
         session['oidc_id_token'] = id_token
 
-    if import_from_settings('OIDC_STORE_REFRESH_TOKEN', False):
+    if update_refresh_token and import_from_settings('OIDC_STORE_REFRESH_TOKEN', False):
         session['oidc_refresh_token'] = refresh_token
 
 
