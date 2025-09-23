@@ -88,6 +88,12 @@ class OIDCAuthenticationCallbackView(View):
                 auth.logout(request)
             assert not request.user.is_authenticated
         elif "code" in request.GET and "state" in request.GET:
+            # If the authenticated user navigates back to the OIDC login page,
+            # it just redirects to the callback again with the same parameters.
+            # This may be specific only to Keycloak.
+            if request.user.is_authenticated:
+                return HttpResponseRedirect(self.success_url)
+
             # Check instead of "oidc_state" check if the "oidc_states" session key exists!
             if "oidc_states" not in request.session:
                 return self.login_failure()
