@@ -88,12 +88,6 @@ class OIDCAuthenticationCallbackView(View):
                 auth.logout(request)
             assert not request.user.is_authenticated
         elif "code" in request.GET and "state" in request.GET:
-            # If the authenticated user navigates back to the OIDC login page,
-            # it just redirects to the callback again with the same parameters.
-            # This may be specific only to Keycloak.
-            if request.user.is_authenticated:
-                return HttpResponseRedirect(self.success_url)
-
             # Check instead of "oidc_state" check if the "oidc_states" session key exists!
             if "oidc_states" not in request.session:
                 return self.login_failure()
@@ -104,8 +98,15 @@ class OIDCAuthenticationCallbackView(View):
             # Code Verifier or None in the "code_verifier" field.
             state = request.GET.get("state")
             if state not in request.session["oidc_states"]:
-                msg = "OIDC callback state not found in session `oidc_states`!"
-                raise SuspiciousOperation(msg)
+                # If the authenticated user navigates back to the OIDC login page,
+                # it just redirects to the callback again with the same parameters.
+                # But in this case, the state is cleaned already.
+                # This may be specific only to Keycloak.
+                if request.user.is_authenticated:
+                    return HttpResponseRedirect(self.success_url)
+                else:
+                    msg = "OIDC callback state not found in session `oidc_states`!"
+                    raise SuspiciousOperation(msg)
 
             # Get the nonce and optional code verifier from the dictionary for further processing
             # and delete the entry to prevent replay attacks.
