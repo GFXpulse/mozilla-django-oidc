@@ -295,3 +295,11 @@ class RefreshOIDCAccessToken(SessionRefresh):
         access_token = token_info.get('access_token')
         refresh_token = token_info.get('refresh_token')
         store_tokens(request.session, access_token, id_token, refresh_token, update_refresh_token=bool(refresh_token))
+
+        # Figure out when this id_token will expire.
+        expiration_interval = self.get_settings(
+            'OIDC_RENEW_TOKEN_EXPIRY_SECONDS',
+            # Handle old configuration value
+            self.get_settings('OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS', 60 * 15)
+        )
+        request.session['oidc_token_expiration'] = time.time() + expiration_interval
